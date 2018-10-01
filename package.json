@@ -1,0 +1,40 @@
+{
+  "name": "react-rx-hoc",
+  "version": "0.0.1",
+  "description": "HOC for connecting rxjs to react components",
+  "main": "release/index.js",
+  "module": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "cross-env NODE_ENV=production ./node_modules/.bin/webpack -c webpack.config.js",
+    "start": "cross-env NODE_ENV=development ./node_modules/.bin/webpack -c webpack.config.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/core": "^7.1.2",
+    "@babel/plugin-proposal-class-properties": "^7.1.0",
+    "@babel/preset-env": "^7.1.0",
+    "@babel/preset-react": "^7.0.0",
+    "babel-eslint": "^10.0.1",
+    "babel-loader": "^8.0.4",
+    "cross-env": "^5.2.0",
+    "eslint": "^5.6.1",
+    "eslint-config-airbnb": "^17.1.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-jsx-a11y": "^6.1.1",
+    "eslint-plugin-react": "^7.11.1",
+    "prettier": "^1.14.3",
+    "react": "^16.5.2",
+    "react-dom": "^16.5.2",
+    "rxjs": "^6.3.3",
+    "webpack": "^4.20.2",
+    "webpack-cli": "^3.1.2"
+  },
+  "peerDependencies": {
+    "react": "^16.0.0",
+    "rxjs": "^6.0.0"
+  }
+}
