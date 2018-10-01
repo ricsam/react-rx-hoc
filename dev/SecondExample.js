@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { map, tap, filter } from 'rxjs/operators';
+import { tap, filter } from 'rxjs/operators';
 import { withLifeCycleStream } from '../src';
 
 class Component extends React.PureComponent {
@@ -23,9 +23,6 @@ class Component extends React.PureComponent {
 }
 
 const SecondExample = withLifeCycleStream(observable => observable.pipe(
-  tap((props) => {
-    // console.log(props);
-  }),
   filter(({ omg }) => omg !== 123),
 ))(Component);
 

@@ -1,9 +1,6 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { ReplaySubject } from 'rxjs';
-import {
-  scan, filter, map, tap,
-} from 'rxjs/operators';
+import { scan, filter, map } from 'rxjs/operators';
 
 export const withStream = epic => (Component) => {
   const subject$ = new ReplaySubject();
