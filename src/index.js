@@ -112,32 +112,24 @@ export const withLifeCycleStream = epic => (Component) => {
 
     allProps.stream.next(streamState);
   };
-  class LifeCycleWrapper extends Component {
-    constructor(props) {
-      super(props);
-      propagateState(props, this.state);
+  const orig = {
+    componentDidMount: Component.prototype.componentDidMount,
+    componentDidUpdate: Component.prototype.componentDidUpdate,
+  };
+  Component.prototype.componentDidMount = function componentDidMount(...args) {
+    const { props, state } = this;
+    propagateState(props, state);
+    if (typeof orig.componentDidMount === 'function') {
+      orig.componentDidMount.apply(this, args);
     }
-
-    componentDidMount() {
-      const { props, state } = this;
-      propagateState(props, state);
-      if (typeof super.componentDidMount === 'function') {
-        super.componentDidMount();
-      }
+  };
+  Component.prototype.componentDidUpdate = function componentDidUpdate(...args) {
+    const { props, state } = this;
+    propagateState(props, state);
+    if (typeof orig.componentDidUpdate === 'function') {
+      orig.componentDidUpdate.apply(this, args);
     }
-
-    componentDidUpdate() {
-      const { props, state } = this;
-      propagateState(props, state);
-      if (typeof super.componentDidUpdate === 'function') {
-        super.componentDidUpdate();
-      }
-    }
-
-    render() {
-      return <Component {...this.props} />;
-    }
-  }
+  };
 
   return withStream(observable => epic(
     observable.pipe(
@@ -156,5 +148,5 @@ export const withLifeCycleStream = epic => (Component) => {
       ),
       map(([, current]) => current),
     ),
-  ))(LifeCycleWrapper);
+  ))(Component);
 };

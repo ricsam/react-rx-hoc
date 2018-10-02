@@ -1,6 +1,7 @@
 import React from 'react';
 import { filter } from 'rxjs/operators';
-import { withStream } from '../src';
+// import { withStream } from '../src';
+import { withStream } from '../release';
 
 class Component extends React.PureComponent {
   componentDidMount() {
@@ -17,8 +18,8 @@ class Component extends React.PureComponent {
   }
 }
 
-const FirstExample = withStream(observable => observable.pipe(
-  filter(({ bar }) => bar !== 123),
-))(Component);
+const FirstExample = withStream(observable => observable.pipe(filter(({ bar }) => bar !== 123)))(
+  Component,
+);
 
 export default FirstExample;

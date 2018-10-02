@@ -1,9 +1,10 @@
 {
   "name": "react-rx-hoc",
-  "version": "0.0.1",
+  "version": "0.0.5",
   "description": "HOC for connecting rxjs to react components",
   "main": "release/index.js",
   "module": "src/index.js",
+  "homepage": "https://github.com/ricsam/react-rx-hoc",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "cross-env NODE_ENV=production ./node_modules/.bin/webpack -c webpack.config.js",

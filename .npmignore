@@ -1,4 +1,4 @@
-node_modules
 build
-release
+dev
+node_modules
 yarn-error.log
