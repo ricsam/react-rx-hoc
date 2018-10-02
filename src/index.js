@@ -3,8 +3,6 @@ import { ReplaySubject } from 'rxjs';
 import { scan, filter, map } from 'rxjs/operators';
 
 export const withStream = epic => (Component) => {
-  const subject$ = new ReplaySubject();
-  const stream$ = epic(subject$);
   class RxWrapper extends React.PureComponent {
     state = {
       complete: false,
@@ -12,8 +10,14 @@ export const withStream = epic => (Component) => {
       streamState: {},
     };
 
+    constructor(props) {
+      super(props);
+      this.subject$ = new ReplaySubject();
+      this.stream$ = epic(this.subject$);
+    }
+
     componentDidMount() {
-      this.subscription = stream$.subscribe({
+      this.subscription = this.stream$.subscribe({
         error: (error) => {
           this.setState({
             error,
@@ -49,17 +53,18 @@ export const withStream = epic => (Component) => {
       } else if (complete) {
         status = 'complete';
       }
-      const stream = {
+      const observer = {
         next: (...args) => {
-          subject$.next(...args);
+          this.subject$.next(...args);
         },
-        complete: (...args) => subject$.complete(...args),
-        error: (...args) => subject$.error(...args),
+        complete: (...args) => this.subject$.complete(...args),
+        error: (...args) => this.subject$.error(...args),
       };
       return (
         <Component
           {...this.props}
-          stream={stream}
+          observer={observer}
+          observable={this.stream$}
           streamState={streamState}
           streamStatus={status}
         />
@@ -102,20 +107,26 @@ export const withLifeCycleStream = epic => (Component) => {
     const props = {
       ...allProps,
     };
-    ['streamStatus', 'streamState', 'stream'].forEach((key) => {
+    ['streamStatus', 'streamState', 'observer', 'observable'].forEach((key) => {
       delete props[key];
     });
     const streamState = {
       props,
       state,
+      streamState: allProps.streamState,
+      streamStatus: allProps.streamStatus,
+      observer: allProps.observer,
+      observable: allProps.observable,
     };
 
-    allProps.stream.next(streamState);
+    allProps.observer.next(streamState);
   };
   const orig = {
     componentDidMount: Component.prototype.componentDidMount,
     componentDidUpdate: Component.prototype.componentDidUpdate,
+    // getDerivedStateFromProps: Component.getDerivedStateFromProps,
   };
+
   Component.prototype.componentDidMount = function componentDidMount(...args) {
     const { props, state } = this;
     propagateState(props, state);
@@ -130,6 +141,22 @@ export const withLifeCycleStream = epic => (Component) => {
       orig.componentDidUpdate.apply(this, args);
     }
   };
+  /*
+  Component.getDerivedStateFromProps = (props, state) => {
+    const newState = {
+      ...props.streamState,
+      ...state,
+    };
+    let origStateCalculation = {};
+    if (typeof orig.getDerivedStateFromProps === 'function') {
+      origStateCalculation = orig.getDerivedStateFromProps(props, newState);
+    }
+    return {
+      ...newState,
+      ...origStateCalculation,
+    };
+  };
+  */
 
   return withStream(observable => epic(
     observable.pipe(
@@ -144,7 +171,9 @@ export const withLifeCycleStream = epic => (Component) => {
         },
       ]),
       filter(
-        ([prev, current]) => !shallowEqual(prev.state, current.state) || !shallowEqual(prev.props, current.props),
+        ([prev, current]) => !shallowEqual(prev.state, current.state)
+            || !shallowEqual(prev.props, current.props)
+            || !shallowEqual(prev.streamState, current.streamState),
       ),
       map(([, current]) => current),
     ),
