@@ -1,6 +1,6 @@
 {
   "name": "react-rx-hoc",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "HOC for connecting rxjs to react components",
   "main": "release/index.js",
   "module": "src/index.js",
